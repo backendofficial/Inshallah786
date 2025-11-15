@@ -62,86 +62,99 @@ function drawDHAHeader(doc, documentTitle) {
 function generatePermanentResidencePDF(doc, permit) {
   drawDHAHeader(doc, 'PERMANENT RESIDENCE PERMIT');
   
-  doc.fontSize(9)
-     .fillColor('#666666')
+  doc.fontSize(8)
+     .fillColor('#333333')
      .text('SECTIONS 26 AND 27 OF ACT NO 13 OF 2002', 50, 150, { align: 'center', width: 495 });
   
-  let y = 190;
+  let y = 175;
   
-  doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
+  // Permit Number and Reference Number
+  doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold');
   doc.text('PERMIT NUMBER', 50, y);
   doc.font('Helvetica').text(permit.permitNumber || 'N/A', 200, y);
   
-  y += 20;
+  y += 18;
   doc.font('Helvetica-Bold').text('REFERENCE NO', 50, y);
   doc.font('Helvetica').text(permit.referenceNumber || permit.permitNumber, 200, y);
   
-  y += 30;
-  doc.fontSize(9).fillColor('#666666')
+  y += 25;
+  doc.fontSize(8).fillColor('#333333').font('Helvetica')
      .text('In terms of the provisions of section 27(b) of the Immigration Act 2002 (Act No 13 of 2002)', 50, y, { width: 495 });
   
-  y += 40;
-  doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
+  y += 35;
+  
+  // Personal Details
+  doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold');
   doc.text('Surname', 50, y);
   doc.font('Helvetica').text((permit.surname || permit.name?.split(' ').pop() || 'N/A').toUpperCase(), 200, y);
   
-  y += 20;
+  y += 18;
   doc.font('Helvetica-Bold').text('First Name(s)', 50, y);
   const firstName = permit.forename || permit.name?.split(' ').slice(0, -1).join(' ') || 'N/A';
   doc.font('Helvetica').text(firstName.toUpperCase(), 200, y);
   
-  y += 20;
+  y += 18;
   doc.font('Helvetica-Bold').text('Nationality', 50, y);
   doc.font('Helvetica').text((permit.nationality || 'N/A').toUpperCase(), 200, y);
   
-  y += 20;
+  y += 18;
   doc.font('Helvetica-Bold').text('Date of Birth', 50, y);
   doc.font('Helvetica').text(permit.dateOfBirth || 'N/A', 200, y);
   
-  y += 20;
+  y += 18;
   doc.font('Helvetica-Bold').text('Gender', 50, y);
   doc.font('Helvetica').text(permit.gender || 'N/A', 200, y);
   
   y += 30;
-  doc.fontSize(9).fillColor('#666666')
+  doc.fontSize(8).fillColor('#333333').font('Helvetica')
      .text('has been authorised to enter the Republic of South Africa for the purpose of taking up permanent residence', 50, y, { width: 495 });
   
-  y += 25;
+  y += 20;
   doc.text('or date of approval of application, already sojourning therein legally, to reside permanently.', 50, y, { width: 495 });
   
-  y += 40;
-  doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
+  y += 35;
+  
+  // Date of Issue
+  doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold');
   doc.text('Date of Issue', 50, y);
   doc.font('Helvetica').text(permit.issueDate || 'N/A', 200, y);
   
-  y += 60;
+  y += 50;
+  
+  // Authorized by
   doc.font('Helvetica-Bold').text('Authorized by:', 50, y);
-  doc.font('Helvetica').text(permit.officerName || 'DHA Officer', 200, y);
+  doc.font('Helvetica').text(permit.officerName || 'Makhode LT', 200, y);
   
-  y += 20;
-  doc.fontSize(8).fillColor('#666666');
+  y += 15;
+  doc.fontSize(7).fillColor('#666666');
   doc.text('Department of Home Affairs', 50, y);
-  doc.text('PRETORIA 0001', 50, y + 12);
+  doc.text('PRETORIA 0001', 50, y + 10);
   
-  const verificationUrl = `https://www.dha.gov.za/verify?ref=${permit.permitNumber || ''}`;
-  QRCode.toDataURL(verificationUrl, { width: 100 })
-    .then(qrDataUrl => {
-      const qrImage = Buffer.from(qrDataUrl.split(',')[1], 'base64');
-      doc.image(qrImage, 450, y - 60, { width: 80 });
-    })
-    .catch(() => {});
+  y += 60;
   
-  y += 80;
+  // Conditions
   doc.fontSize(8).fillColor('#000000').font('Helvetica-Bold');
   doc.text('Conditions:', 50, y);
   doc.font('Helvetica').fontSize(7).fillColor('#333333');
-  y += 15;
+  y += 12;
   doc.text('(i) This permit is issued once only and must be duly safeguarded.', 50, y, { width: 495 });
-  y += 20;
-  doc.text('(ii) Permanent residents who are absent from the Republic for three years or longer may forfeit their right to permanent residence in the Republic.', 50, y, { width: 495 });
+  y += 18;
+  doc.text('(ii) Permanent residents who are absent from the Republic for three years or longer may forfeit their right to', 50, y, { width: 495 });
+  y += 10;
+  doc.text('permanent residence in the Republic.', 54, y, { width: 495 });
   
-  doc.fontSize(8).fillColor('#006600')
-     .text(`Control Number: ${permit.controlNumber || 'A' + Math.random().toString().slice(2, 9)}`, 50, 750);
+  // Control Number at bottom
+  doc.fontSize(8).fillColor('#333333')
+     .text(`Control Number: ${permit.controlNumber || 'A629649'}`, 50, 750);
+  
+  // QR Code
+  const verificationUrl = `${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : 'http://localhost:5000'}/api/permits/${permit.id}/verify-document`;
+  QRCode.toDataURL(verificationUrl, { width: 100 })
+    .then(qrDataUrl => {
+      const qrImage = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+      doc.image(qrImage, 450, 200, { width: 80 });
+    })
+    .catch(() => {});
 }
 
 function generateWorkPermitPDF(doc, permit) {
