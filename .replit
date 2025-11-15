@@ -3,7 +3,7 @@ modules = ["nodejs-20", "bash", "web"]
 expertMode = true
 
 [workflows]
-runButton = "Project"
+runButton = "DHA Production Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -43,6 +43,15 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "bash scripts/validate-render-blueprint.sh"
+
+[[workflows.workflow]]
+name = "DHA Production Server"
+author = 49770012
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash start-dev.sh"
 
 [[ports]]
 localPort = 5000

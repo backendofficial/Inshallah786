@@ -3,5 +3,5 @@
 
 echo "🚀 Starting DHA Back Office Server..."
 
-# Start the server
-NODE_ENV=development tsx server/index.ts
+# Start the server in production mode
+NODE_ENV=production node server/index.js
