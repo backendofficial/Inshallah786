@@ -9,6 +9,9 @@ import apiRoutes from './routes/api.js';
 import ultraAIRoutes from './routes/ultra-ai-routes.js';
 import agentTasksRoutes from './routes/agent-tasks.js';
 import { enhancedErrorHandler as errorHandler } from './middleware/error-handler.js';
+import healthRoutes from './routes/health.js';
+import documentRoutes from './routes/document.routes.js';
+import productionDocumentRoutes from './routes/production-documents.js';
 
 // Placeholder for military-grade auth (create if needed)
 const militaryGradeAuth = (req: any, res: any, next: any) => next();
@@ -37,6 +40,9 @@ app.get('/health', async (req, res) => {
 app.use('/api', militaryGradeAuth, apiRoutes);
 app.use('/api/ultra-ai', ultraAIRoutes);
 app.use('/api/agent', agentTasksRoutes);
+app.use('/api/health', healthRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/production/documents', productionDocumentRoutes);
 
 // Error handling
 app.use(errorHandler);

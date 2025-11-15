@@ -308,7 +308,43 @@ export default function DocumentServices() {
   const generatePDF = async (documentType: string, formData: any) => {
     setIsGeneratingPDF(true);
     try {
-      let result;
+      // Use production API
+      const response = await fetch('/api/production/documents/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentType,
+          applicantData: {
+            fullName: formData.fullName,
+            idNumber: formData.idNumber,
+            dateOfBirth: formData.dateOfBirth || new Date().toISOString(),
+            nationality: formData.nationality || 'South African',
+            gender: formData.gender || 'M',
+            passportNumber: formData.passportNumber,
+            email: formData.email,
+            phone: formData.phoneNumber,
+            address: formData.address
+          },
+          urgentProcessing: formData.urgentProcessing || false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Document generation failed');
+      }
+
+      // Download PDF
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${documentType}-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      let result = { success: true };
       switch (documentType) {
         case "birth_certificate":
           result = await pdfService.generateBirthCertificate({
