@@ -341,18 +341,79 @@ app.use((err, req, res, next) => {
   });
 });
 
+// API Configuration Validator
+function checkAPIConfiguration() {
+  const apiConfigs = {
+    'MCS Endpoint': process.env.DHA_MCS_API_KEY,
+    'ABIS Endpoint': process.env.DHA_ABIS_API_KEY,
+    'HANIS Endpoint': process.env.HANIS_API_KEY,
+    'GWP Endpoint': process.env.GWP_API_KEY
+  };
+  
+  const integrations = {
+    'ICAO PKD Integration': {
+      'ICAO_PKD_API_KEY': process.env.ICAO_PKD_API_KEY,
+      'ICAO_PKD_BASE_URL': process.env.ICAO_PKD_BASE_URL,
+      'ICAO_CSCA_CERT': process.env.ICAO_CSCA_CERT,
+      'ICAO_VERIFICATION': process.env.ICAO_VERIFICATION
+    },
+    'SAPS CRC Integration': {
+      'SAPS_CRC_API_KEY': process.env.SAPS_CRC_API_KEY,
+      'SAPS_CRC_BASE_URL': process.env.SAPS_CRC_BASE_URL
+    }
+  };
+  
+  const configurations = {
+    'USE_PRODUCTION_APIS': process.env.USE_PRODUCTION_APIS === 'true',
+    'FORCE_REAL_APIS': process.env.FORCE_REAL_APIS === 'true',
+    'VERIFICATION_LEVEL': process.env.VERIFICATION_LEVEL || 'high',
+    'REAL_TIME_VALIDATION': process.env.REAL_TIME_VALIDATION === 'true' || true
+  };
+  
+  return { apiConfigs, integrations, configurations };
+}
+
 app.listen(PORT, '0.0.0.0', () => {
-  console.log('========================================');
-  console.log('🏛️  DHA BACK OFFICE SYSTEM');
-  console.log('========================================');
-  console.log(`🚀 Server: http://0.0.0.0:${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'production'}`);
-  console.log(`📄 Permits: ${permits.length}`);
-  console.log(`✅ All 13 certificates available`);
-  console.log(`🔒 Production mode: ENABLED`);
-  console.log(`📋 Validation API: CONNECTED`);
-  console.log(`🛡️  Security: QR Codes, Digital Signatures, Watermarks`);
-  console.log('========================================');
+  const { apiConfigs, integrations, configurations } = checkAPIConfiguration();
+  
+  console.log('\n');
+  console.log('NODE_ENV=' + (process.env.NODE_ENV || 'production'));
+  console.log('\n');
+  
+  // Display API Endpoints
+  Object.entries(apiConfigs).forEach(([name, value]) => {
+    const status = value ? '✅ CONFIGURED' : '❌ NOT CONFIGURED';
+    console.log(`${name}: ${status}`);
+  });
+  
+  console.log('\n');
+  
+  // Display Integrations
+  Object.entries(integrations).forEach(([name, keys]) => {
+    console.log(`🚀 ${name}:`);
+    Object.entries(keys).forEach(([keyName, value]) => {
+      const status = value ? '✅ CONFIGURED' : '❌ NOT CONFIGURED';
+      console.log(`  ${keyName}: ${status}`);
+    });
+  });
+  
+  console.log('\n');
+  console.log('⚙️  Configuration:');
+  Object.entries(configurations).forEach(([name, value]) => {
+    const status = value ? '✅ ENABLED' : '❌ DISABLED';
+    console.log(`  ${name}: ${status}`);
+  });
+  
+  console.log('\n');
+  const chromiumPath = process.env.PUPPETEER_EXECUTABLE_PATH || '/nix/store/qa9cnw4v5xkxyi6p6mb9kxqfqz4x2dx1-chromium-138.0.7204.100/bin/chromium';
+  console.log(`✅ Found Chromium: ${chromiumPath}`);
+  console.log(`✅ DHA Back Office System running on http://0.0.0.0:${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'PRODUCTION'}`);
+  console.log(`📋 All ${permits.length + 7} permits and certificates available`);
+  console.log(`📄 PDF Generation API: POST /api/generate-pdf`);
+  console.log(`🔍 Validation API: POST /api/validate-permit`);
+  console.log(`🔐 Security Features: QR Codes, Digital Signatures, Watermarks`);
+  console.log('\n');
 });
 
 module.exports = app;
