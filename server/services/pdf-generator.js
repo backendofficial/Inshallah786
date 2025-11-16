@@ -103,13 +103,16 @@ function drawDHAHeader(doc, documentTitle) {
 }
 
 async function generatePermanentResidencePDF(doc, permit) {
-  // Background watermark pattern - subtle
+  // Background - Light beige/cream texture
+  doc.rect(0, 0, 595, 842).fill('#F5F3E8');
+  
+  // Subtle watermark pattern
   doc.save();
-  doc.opacity(0.02);
+  doc.opacity(0.015);
   const coatOfArmsPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.png');
   if (imageExists(coatOfArmsPath)) {
     try {
-      doc.image(coatOfArmsPath, 200, 300, { width: 250, height: 250 });
+      doc.image(coatOfArmsPath, 220, 350, { width: 180, height: 180 });
     } catch (error) {
       // Continue without watermark
     }
@@ -296,68 +299,81 @@ async function generatePermanentResidencePDF(doc, permit) {
 
   y += 50;
 
-  // Signature section
-  doc.moveTo(leftCol, y).lineTo(leftCol + 180, y).stroke('#000000');
-  
-  doc.fontSize(8)
-     .font('Helvetica-Bold')
-     .fillColor('#000000')
-     .text('DIRECTOR-GENERAL', leftCol, y + 8);
+  // Office stamp box (positioned higher and to the right)
+  const stampY = y - 35;
+  const stampX = 310;
+  doc.rect(stampX, stampY, 225, 100).stroke('#CC0000');
+  doc.rect(stampX + 1, stampY + 1, 223, 98).stroke('#CC0000'); // Double border
   
   doc.fontSize(9)
-     .font('Helvetica-Bold')
-     .text('Makhode LT', rightCol + 50, y - 10);
-  
-  doc.fontSize(8)
      .font('Helvetica')
-     .text('Surname and Initials', rightCol + 50, y + 8);
-
-  y += 25;
-  doc.fontSize(8)
-     .font('Helvetica')
-     .text('DEPARTMENT OF HOME AFFAIRS', leftCol, y);
-
-  // Office stamp box
-  const stampY = y - 90;
-  doc.rect(rightCol + 40, stampY, 170, 85).stroke('#cc0000');
+     .fillColor('#CC0000')
+     .text('Office stamp', stampX + 75, stampY + 10);
   
   doc.fontSize(10)
      .font('Helvetica-Bold')
-     .fillColor('#cc0000')
-     .text('Office stamp', rightCol + 85, stampY + 8);
+     .fillColor('#CC0000')
+     .text('DEPARTMENT OF HOME AFFAIRS', stampX + 25, stampY + 28);
   
   doc.fontSize(9)
      .font('Helvetica-Bold')
-     .fillColor('#cc0000')
-     .text('DEPARTMENT OF HOME AFFAIRS', rightCol + 50, stampY + 28);
+     .text('PRIVATE BAG X114', stampX + 60, stampY + 48);
+  
+  y += 5;
+  doc.fontSize(9)
+     .font('Helvetica-Bold')
+     .fillColor('#CC0000')
+     .text('PRETORIA  0001', stampX + 65, stampY + 65);
+  
+  doc.fontSize(12)
+     .font('Helvetica-Bold')
+     .fillColor('#CC0000')
+     .text('07', stampX + 105, stampY + 80);
+
+  // Signature section (left side)
+  const sigY = y + 45;
+  doc.moveTo(leftCol, sigY).lineTo(leftCol + 200, sigY).stroke('#000000');
   
   doc.fontSize(8)
-     .text('PRIVATE BAG X114', rightCol + 75, stampY + 43);
-  doc.text('PRETORIA  0001', rightCol + 80, stampY + 58);
-  
-  doc.fontSize(11)
      .font('Helvetica-Bold')
-     .text('07', rightCol + 110, stampY + 70);
-
-  y += 35;
-
-  // Date printed section
-  doc.moveTo(leftCol, y).lineTo(leftCol + 180, y).stroke('#000000');
-  doc.moveTo(rightCol, y).lineTo(545, y).stroke('#000000');
-
-  y += 8;
+     .fillColor('#000000')
+     .text('DIRECTOR-GENERAL', leftCol, sigY + 8);
+  
   doc.fontSize(8)
      .font('Helvetica')
-     .fillColor('#000000')
-     .text('Date printed', leftCol + 40, y);
-  
-  doc.text('Printed by: (system code)', rightCol + 30, y);
+     .text('DEPARTMENT OF HOME AFFAIRS', leftCol, sigY + 23);
 
-  y += 35;
+  // Name and initials (right side, aligned with stamp)
+  doc.fontSize(10)
+     .font('Helvetica-Bold')
+     .fillColor('#000000')
+     .text('Makhode LT', stampX + 70, sigY - 20);
+  
+  doc.fontSize(8)
+     .font('Helvetica-Oblique')
+     .fillColor('#666666')
+     .text('Surname and Initials', stampX + 65, sigY + 5);
+
+  y += 90;
+
+  // Date printed and Printed by section (two columns with underlines)
+  const datePrintedY = y;
+  doc.moveTo(leftCol, datePrintedY).lineTo(leftCol + 200, datePrintedY).stroke('#000000');
+  doc.moveTo(rightCol - 20, datePrintedY).lineTo(545, datePrintedY).stroke('#000000');
+
+  doc.fontSize(8)
+     .font('Helvetica-Oblique')
+     .fillColor('#666666')
+     .text('Date printed', leftCol + 50, datePrintedY + 8);
+  
+  doc.text('Printed by: (system code)', rightCol + 30, datePrintedY + 8);
+
+  y += 45;
 
   // Conditions section
-  doc.fontSize(10)
+  doc.fontSize(9)
      .font('Helvetica-Bold')
+     .fillColor('#000000')
      .text('Conditions', leftCol, y);
 
   y += 18;
@@ -372,8 +388,9 @@ async function generatePermanentResidencePDF(doc, permit) {
   y += 10;
   doc.text('     the Republic. A period of absence may only be interrupted by an admission and sojourn in the Republic.', 50, y, { width: 495 });
 
-  // Control Number at bottom with barcode
-  y = 740;
+  // Bottom section - Control Number with barcode
+  y = 745;
+  
   doc.fontSize(9)
      .font('Helvetica-Bold')
      .fillColor('#000000')
@@ -383,11 +400,17 @@ async function generatePermanentResidencePDF(doc, permit) {
      .font('Helvetica-Bold')
      .text('No. A', 490, y + 18);
 
-  // Add barcode placeholder
-  doc.fontSize(24)
-     .font('Courier')
+  // Barcode representation (left bottom)
+  doc.fontSize(20)
+     .font('Courier-Bold')
      .fillColor('#000000')
-     .text('||||| ||| ||| |||| ||| ||||', 50, y + 15);
+     .text('||||| |||| ||| |||| ||| ||| ||||', 50, y + 10);
+  
+  // Document footer metadata
+  doc.fontSize(6)
+     .font('Helvetica')
+     .fillColor('#999999')
+     .text('Imaging House Tel: (012) 3484400', 50, y + 35);
 }
 
 async function generateWorkPermitPDF(doc, permit) {
