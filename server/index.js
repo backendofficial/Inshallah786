@@ -1,4 +1,3 @@
-
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -82,7 +81,7 @@ app.set('trust proxy', 1);
 // Helper function to serve files with fallback paths and inline HTML backup
 const serveFile = (res, filename, fallbackPaths = [], inlineHTML = null) => {
   const paths = [path.join(FINAL_ASSETS_DIR, filename), ...fallbackPaths];
-  
+
   const tryServe = (index) => {
     if (index >= paths.length) {
       // All file paths failed - use inline HTML fallback if available
@@ -96,7 +95,7 @@ const serveFile = (res, filename, fallbackPaths = [], inlineHTML = null) => {
       }
       return;
     }
-    
+
     const currentPath = paths[index];
     res.sendFile(currentPath, (err) => {
       if (err) {
@@ -105,7 +104,7 @@ const serveFile = (res, filename, fallbackPaths = [], inlineHTML = null) => {
       }
     });
   };
-  
+
   tryServe(0);
 };
 
@@ -117,6 +116,18 @@ app.use('/public', express.static(FINAL_ASSETS_DIR, {
     }
   }
 }));
+app.use(express.static(FINAL_ASSETS_DIR));
+
+// Explicitly serve coat of arms image
+app.get('/coat-of-arms-transparent.png', (req, res) => {
+  const imagePath = path.join(FINAL_ASSETS_DIR, 'coat-of-arms-transparent.png');
+  res.sendFile(imagePath, (err) => {
+    if (err) {
+      console.error('Error serving coat of arms:', err);
+      res.status(404).send('Image not found');
+    }
+  });
+});
 
 
 // Root route - serve main back office interface
@@ -204,7 +215,7 @@ app.get('/api/health', async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const { apiHealthMonitor } = await import('./services/api-health-monitor.js');
     const apiHealth = apiHealthMonitor.getHealthReport();
-    
+
     res.json({
       success: true,
       status: 'operational',
@@ -275,7 +286,7 @@ app.get('/api/system-status', async (req, res) => {
 app.post('/api/validate-permit', async (req, res) => {
   const { permitNumber } = req.body;
   const permit = await findPermitByNumber(permitNumber);
-  
+
   if (permit) {
     res.json({
       success: true,
@@ -297,7 +308,7 @@ app.post('/api/validate-permit', async (req, res) => {
 app.post('/api/generate-pdf', async (req, res) => {
   try {
     const { permitData } = req.body;
-    
+
     if (!permitData) {
       return res.status(400).json({ success: false, message: 'No permit data provided' });
     }
@@ -366,13 +377,13 @@ function generatePermitHTML(permit, qrCode, signature) {
       transform: translate(-50%, -50%); 
       width: 400px; 
       height: 400px; 
-      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png') center/contain no-repeat; 
+      background: url('/coat-of-arms-transparent.png') center/contain no-repeat; 
       opacity: 0.03; 
       z-index: -1; 
     }
     .header { background: linear-gradient(135deg, #007a3d 0%, #005a2d 100%); color: white; padding: 25px; border-bottom: 5px solid #FFD700; position: relative; }
     .official-banner { background: linear-gradient(135deg, #007a3d 0%, #005a2d 100%); color: white; padding: 10px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 3px solid #FFD700; }
-    .coat-of-arms { width: 80px; height: 80px; background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png') center/contain no-repeat; display: inline-block; float: right; }
+    .coat-of-arms { width: 80px; height: 80px; background: url('/coat-of-arms-transparent.png') center/contain no-repeat; display: inline-block; float: right; }
     .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 120px; color: rgba(0, 122, 61, 0.04); z-index: -1; white-space: nowrap; font-weight: 900; }
     .content { margin-top: 30px; }
     .field { margin: 15px 0; }
@@ -385,7 +396,7 @@ function generatePermitHTML(permit, qrCode, signature) {
 </head>
 <body>
   <div class="watermark">DEPARTMENT OF HOME AFFAIRS • REPUBLIC OF SOUTH AFRICA</div>
-  
+
   <div class="official-banner">Official Government Document - Republic of South Africa</div>
   <div class="header">
     <div class="coat-of-arms"></div>
