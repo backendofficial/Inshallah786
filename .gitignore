@@ -1,14 +1,8 @@
-node_modules
-dist
-.env
-.env.local
-.env.production
+
 .vercel
 
 # Development files
-# NOTE: `attached_assets` was previously ignored during development. We now need it
-# in the repository (production templates). Remove the ignore so it will be committed.
-#attached_assets/
+
 *.test.ts
 *.test.js
 *.spec.ts
@@ -21,7 +15,6 @@ test-*.sh
 **/*debug*/
 
 # Build files
-client/dist
 client/node_modules/.vite
 .cache
 
