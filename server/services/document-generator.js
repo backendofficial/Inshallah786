@@ -17,6 +17,7 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
 // Official DHA Coat of Arms
 const COAT_OF_ARMS = {
+  primary: path.join(PROJECT_ROOT, 'attached_assets/IMG_9090_1763376601068.jpeg'),
   svg: path.join(PROJECT_ROOT, 'attached_assets/images/coat-of-arms-official.svg'),
   jpeg: path.join(PROJECT_ROOT, 'Coat of arms'),
   png: path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg')
@@ -39,7 +40,16 @@ const TEMPLATES = {
  */
 async function getCoatOfArms() {
   try {
-    // Try SVG first (best quality)
+    // Try primary image first (new official coat of arms)
+    if (fs.existsSync(COAT_OF_ARMS.primary)) {
+      const buffer = await sharp(COAT_OF_ARMS.primary)
+        .resize(200, 200, { fit: 'inside' })
+        .png({ quality: 100 })
+        .toBuffer();
+      return buffer;
+    }
+    
+    // Try SVG
     if (fs.existsSync(COAT_OF_ARMS.svg)) {
       const buffer = await sharp(COAT_OF_ARMS.svg)
         .resize(200, 200, { fit: 'inside' })
