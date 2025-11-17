@@ -20,6 +20,21 @@ const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const ASSETS_DIR = path.join(PROJECT_ROOT, 'attached_assets');
 
+// Helper function to get coat of arms as data URL for PDF generation
+function getCoatOfArmsDataURL() {
+  try {
+    const coatPath = path.join(ASSETS_DIR, 'coat-of-arms-official.png');
+    if (fs.existsSync(coatPath)) {
+      const imageBuffer = fs.readFileSync(coatPath);
+      const base64Image = imageBuffer.toString('base64');
+      return `data:image/png;base64,${base64Image}`;
+    }
+  } catch (error) {
+    console.error('Error loading coat of arms:', error);
+  }
+  return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png';
+}
+
 // Candidate paths to look for attached_assets on different platforms
 const candidateAssetPaths = [
   path.join(PROJECT_ROOT, 'attached_assets'),
@@ -351,6 +366,7 @@ app.post('/api/generate-pdf', async (req, res) => {
 });
 
 function generatePermitHTML(permit, qrCode, signature) {
+  const coatOfArmsDataURL = getCoatOfArmsDataURL();
   return `
 <!DOCTYPE html>
 <html>
@@ -366,13 +382,13 @@ function generatePermitHTML(permit, qrCode, signature) {
       transform: translate(-50%, -50%); 
       width: 400px; 
       height: 400px; 
-      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png') center/contain no-repeat; 
+      background: url('${coatOfArmsDataURL}') center/contain no-repeat; 
       opacity: 0.03; 
       z-index: -1; 
     }
     .header { background: linear-gradient(135deg, #007a3d 0%, #005a2d 100%); color: white; padding: 25px; border-bottom: 5px solid #FFD700; position: relative; }
     .official-banner { background: linear-gradient(135deg, #007a3d 0%, #005a2d 100%); color: white; padding: 10px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 3px solid #FFD700; }
-    .coat-of-arms { width: 80px; height: 80px; background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png') center/contain no-repeat; display: inline-block; float: right; }
+    .coat-of-arms { width: 80px; height: 80px; background: url('${coatOfArmsDataURL}') center/contain no-repeat; display: inline-block; float: right; }
     .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 120px; color: rgba(0, 122, 61, 0.04); z-index: -1; white-space: nowrap; font-weight: 900; }
     .content { margin-top: 30px; }
     .field { margin: 15px 0; }

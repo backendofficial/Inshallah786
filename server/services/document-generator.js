@@ -15,13 +15,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
-// Official DHA Coat of Arms (Processed - background removed, cropped)
+// Official DHA Coat of Arms (Official version with transparent background)
 const COAT_OF_ARMS = {
-  primary: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-processed.png'),
-  fallback: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-transparent.png'),
-  svg: path.join(PROJECT_ROOT, 'attached_assets/images/coat-of-arms-official.svg'),
-  jpeg: path.join(PROJECT_ROOT, 'Coat of arms'),
-  png: path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg')
+  primary: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-official.png'),
+  fallback: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-official.png'),
+  svg: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-official.png'),
+  jpeg: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-official.png'),
+  png: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-official.png')
 };
 
 // Document templates for fallback ONLY (Professional scanned versions - QR codes removed)
