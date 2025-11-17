@@ -53,7 +53,7 @@ export function generateVerificationPage(permit) {
             transform: translate(-50%, -50%);
             width: 400px;
             height: 400px;
-            background: url('/public/coat-of-arms-official.png') center/contain no-repeat;
+            background: url('/coat-of-arms-transparent.png') center/contain no-repeat;
             opacity: 0.03;
             z-index: 0;
             pointer-events: none;
@@ -120,7 +120,8 @@ export function generateVerificationPage(permit) {
         .sa-coat-of-arms {
             width: 80px;
             height: 80px;
-            background: url('/public/coat-of-arms-official.png') center/contain no-repeat;
+            background: url('/coat-of-arms-transparent.png') center/contain no-repeat;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
         }
 
         .rsa-text {
@@ -360,24 +361,6 @@ export function generateVerificationPage(permit) {
             gap: 20px;
             margin: 20px 0;
         }
-
-        /* FLAG STRIP */
-        .flag-strip {
-            display: flex;
-            height: 12px;
-            width: 100%;
-        }
-
-        .flag-strip div {
-            flex: 1;
-        }
-
-        .flag-black { background: #000000; }
-        .flag-gold { background: #FFD700; }
-        .flag-white { background: #ffffff; }
-        .flag-green { background: #007A3D; }
-        .flag-blue { background: #0066CC; }
-        .flag-orange { background: #FF6A00; }
 
         @media (max-width: 768px) {
             .name {
