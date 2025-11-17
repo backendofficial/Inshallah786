@@ -38,6 +38,8 @@ const TEMPLATES = {
   "Relative's Visa": path.join(PROJECT_ROOT, 'attached_assets/IMG_9145_1763377365326.png'),
   'Refugee Status (Section 24)': path.join(PROJECT_ROOT, 'attached_assets/IMG_9143_1763377365326.png'),
   'Refugee Certificate': path.join(PROJECT_ROOT, 'attached_assets/IMG_9146_1763377365326.png'),
+  'Formal Recognition of Refugee Status': path.join(PROJECT_ROOT, 'attached_assets/IMG_9151_1763377831129.jpeg'),
+  'Refugee Status 4 Years': path.join(PROJECT_ROOT, 'attached_assets/IMG_9150_1763377831128.png'),
   'Declaration of Allegiance': path.join(PROJECT_ROOT, 'attached_assets/IMG_9141_1763377365326.png')
 };
 
