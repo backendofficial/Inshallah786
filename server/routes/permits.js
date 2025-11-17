@@ -139,7 +139,7 @@ router.get('/:id/qr', async (req, res) => {
     }
     
     // Prioritize Render URL for QR codes
-    const renderUrl = process.env.RENDER_EXTERNAL_URL || 'https://inshallah786-y0lf.onrender.com';
+    const renderUrl = process.env.RENDER_EXTERNAL_URL || 'https://dha-verification-admin-portal-co-gov.onrender.com';
     const verificationUrl = `${renderUrl}/api/permits/${permit.id}/verify-document`;
     const qrDataUrl = await QRCode.toDataURL(verificationUrl, { width: 300, errorCorrectionLevel: 'H' });
     
@@ -168,7 +168,7 @@ router.get('/:id/verify', async (req, res) => {
     
     const refNumber = permit.permitNumber || permit.referenceNumber || permit.fileNumber || permit.identityNumber;
     // Use Render URL for all verification links
-    const renderUrl = process.env.RENDER_EXTERNAL_URL || 'https://inshallah786-y0lf.onrender.com';
+    const renderUrl = process.env.RENDER_EXTERNAL_URL || 'https://dha-verification-admin-portal-co-gov.onrender.com';
     const localVerificationUrl = `${renderUrl}/api/permits/${permit.id}/verify-document`;
     
     res.json({
