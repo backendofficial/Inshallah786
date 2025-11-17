@@ -3,11 +3,11 @@ services:
     name: dha-back-office
     env: node
     plan: standard
-    
+
     # Build configuration
     buildCommand: npm install && mkdir -p /opt/render/project/attached_assets && cp -r attached_assets/* /opt/render/project/attached_assets/ 2>/dev/null || true
     startCommand: npm start
-    
+
     # Environment variables - FIXED: using key/value only (no scope)
     envVars:
       - key: NODE_ENV
@@ -34,9 +34,34 @@ services:
         value: abis-api-key-production
       - key: HANIS_API_KEY
         value: hanis-api-key-production
-    
+
     # Health check
     healthCheckPath: /api/health
-    
+
     # Auto-deploy
     autoDeploy: true
+
+  # Background Worker for document verification monitoring
+  - type: worker
+    name: dha-verification-worker
+    env: node
+    region: frankfurt
+    plan: starter
+    buildCommand: npm install
+    startCommand: node server/services/verification-worker.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: WORKER_TYPE
+        value: verification
+
+# Cron jobs for scheduled tasks
+cronJobs:
+  - name: health-check-monitor
+    schedule: "*/5 * * * *"  # Every 5 minutes
+    command: curl https://dha-verification-admin-portal-co-gov.onrender.com/api/health
+
+  - name: permit-verification-sync
+    schedule: "0 */6 * * *"  # Every 6 hours
+    command: node server/services/permit-sync.js
