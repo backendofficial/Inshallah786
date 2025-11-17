@@ -57,7 +57,7 @@ async function getCoatOfArms() {
         .toBuffer();
       return buffer;
     }
-    
+
     // Try SVG
     if (fs.existsSync(COAT_OF_ARMS.svg)) {
       const buffer = await sharp(COAT_OF_ARMS.svg)
@@ -66,7 +66,7 @@ async function getCoatOfArms() {
         .toBuffer();
       return buffer;
     }
-    
+
     // Fallback to JPEG
     if (fs.existsSync(COAT_OF_ARMS.jpeg)) {
       const buffer = await sharp(COAT_OF_ARMS.jpeg)
@@ -75,7 +75,7 @@ async function getCoatOfArms() {
         .toBuffer();
       return buffer;
     }
-    
+
     return null;
   } catch (error) {
     console.log('⚠️ Coat of Arms load error:', error.message);
@@ -91,15 +91,15 @@ export async function generatePermitPDF(permit, options = {}) {
   return new Promise(async (resolve, reject) => {
     try {
       console.log(`📄 Generating PDF for: ${permit.name || permit.surname} (${permit.type})`);
-      
+
       // Check if we have real API data or need template
       const useTemplate = options.forceTemplate || !permit.apiSource;
-      
+
       if (useTemplate && TEMPLATES[permit.type]) {
         console.log(`🔄 Using template for ${permit.type}`);
         return resolve(await generateFromTemplate(permit));
       }
-      
+
       // Generate from structured data (API response)
       const doc = new PDFDocument({ 
         size: 'A4',
@@ -194,7 +194,7 @@ function overlayApplicantData(doc, permit) {
   doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
 
   const type = permit.type.toLowerCase();
-  
+
   if (type.includes('permanent')) {
     doc.text(permit.permitNumber || '', 150, 165);
     doc.text(permit.referenceNumber || '', 400, 165);
@@ -223,7 +223,7 @@ function overlayApplicantData(doc, permit) {
  */
 async function drawDHAHeader(doc, title) {
   const coatBuffer = await getCoatOfArms();
-  
+
   if (coatBuffer) {
     doc.image(coatBuffer, 460, 45, { width: 60, height: 60 });
   }
@@ -243,9 +243,9 @@ async function drawDHAHeader(doc, title) {
  */
 async function generatePermanentResidencePDF(doc, permit) {
   doc.rect(0, 0, 595, 842).fill('#F5F3E8');
-  
+
   const coatBuffer = await getCoatOfArms();
-  
+
   // Watermark
   if (coatBuffer) {
     doc.save();
@@ -272,7 +272,7 @@ async function generatePermanentResidencePDF(doc, permit) {
   let y = 130;
   doc.fontSize(15).font('Helvetica-Bold').fillColor('#000000')
      .text('PERMANENT RESIDENCE PERMIT', 50, y);
-  
+
   y += 20;
   doc.fontSize(8).font('Helvetica').fillColor('#666666')
      .text('SECTIONS 26 AND 27 OF ACT NO. 13 OF 2002', 50, y);
@@ -333,18 +333,18 @@ async function generatePermanentResidencePDF(doc, permit) {
      .text(permit.issueDate || '', leftCol + 80, y + 8);
 
   y += 50;
-  
+
   // Office stamp
   const stampY = y - 35;
   const stampX = 310;
   doc.strokeColor('#CC0000').lineWidth(1.5);
   doc.rect(stampX, stampY, 225, 100).stroke();
   doc.rect(stampX + 2, stampY + 2, 221, 96).stroke();
-  
+
   if (coatBuffer) {
     doc.image(coatBuffer, stampX + 87, stampY + 5, { width: 50, height: 50 });
   }
-  
+
   doc.fontSize(7).font('Helvetica-Oblique').fillColor('#CC0000')
      .text('Office stamp', stampX + 85, stampY + 58, { width: 60, align: 'center' });
   doc.fontSize(9).font('Helvetica-Bold')
@@ -373,7 +373,7 @@ async function generatePermanentResidencePDF(doc, permit) {
  */
 async function generateWorkPermitPDF(doc, permit) {
   await drawDHAHeader(doc, 'GENERAL WORK VISA SECTION 19(2)');
-  
+
   let y = 170;
   doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
   doc.text('Ref No:', 50, y);
@@ -404,7 +404,7 @@ async function generateWorkPermitPDF(doc, permit) {
  */
 async function generateRelativesPermitPDF(doc, permit) {
   await drawDHAHeader(doc, "RELATIVE'S VISA (SPOUSE)");
-  
+
   let y = 170;
   doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
   doc.text('Ref No:', 50, y);
@@ -435,11 +435,11 @@ async function generateRelativesPermitPDF(doc, permit) {
  */
 async function generateBirthCertificatePDF(doc, permit) {
   await drawDHAHeader(doc, 'BIRTH CERTIFICATE');
-  
+
   let y = 200;
   doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
   doc.text('CHILD', 50, y);
-  
+
   y += 20;
   doc.text('SURNAME:', 70, y);
   doc.font('Helvetica').text(permit.surname || '', 200, y);
@@ -490,7 +490,7 @@ async function generateNaturalizationPDF(doc, permit) {
  */
 async function generateRefugeePDF(doc, permit) {
   await drawDHAHeader(doc, 'FORMAL RECOGNITION OF REFUGEE STATUS');
-  
+
   let y = 200;
   doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
   doc.text('NAME AND SURNAME:', 50, y);
@@ -517,7 +517,7 @@ async function generateRefugeePDF(doc, permit) {
  */
 async function generateGenericPermitPDF(doc, permit) {
   await drawDHAHeader(doc, permit.type || 'OFFICIAL DOCUMENT');
-  
+
   let y = 180;
   doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold');
 

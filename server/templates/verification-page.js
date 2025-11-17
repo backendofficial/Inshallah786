@@ -120,7 +120,8 @@ export function generateVerificationPage(permit) {
         .sa-coat-of-arms {
             width: 80px;
             height: 80px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_of_arms_of_South_Africa.svg/500px-Coat_of_arms_of_South_Africa.svg.png') center/contain no-repeat;
+            background: url('/public/images/coat-of-arms-official.png') center/contain no-repeat;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
         }
         
         .rsa-text {
