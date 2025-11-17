@@ -15,10 +15,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
-// Official DHA Coat of Arms
+// Official DHA Coat of Arms (processed - background removed, cropped)
 const COAT_OF_ARMS = {
-  primary: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-transparent.png'),
-  fallback: path.join(PROJECT_ROOT, 'attached_assets/IMG_9090_1763376601068.jpeg'),
+  primary: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-processed.png'),
+  fallback: path.join(PROJECT_ROOT, 'attached_assets/coat-of-arms-transparent.png'),
   svg: path.join(PROJECT_ROOT, 'attached_assets/images/coat-of-arms-official.svg'),
   jpeg: path.join(PROJECT_ROOT, 'Coat of arms'),
   png: path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg')
@@ -176,14 +176,6 @@ async function generateFromTemplate(permit) {
       // Overlay applicant data
       overlayApplicantData(doc, permit);
 
-      // Add verification QR code
-      const qrCode = await QRCode.toDataURL(
-        `https://www.dha.gov.za/verify?ref=${permit.permitNumber || permit.referenceNumber}`,
-        { width: 100, errorCorrectionLevel: 'H' }
-      );
-      const qrBuffer = Buffer.from(qrCode.split(',')[1], 'base64');
-      doc.image(qrBuffer, 480, 720, { width: 80, height: 80 });
-
       doc.end();
     } catch (error) {
       reject(error);
@@ -234,12 +226,10 @@ async function drawDHAHeader(doc, title) {
 
   doc.fillColor('#007a3d').fontSize(22).font('Helvetica-Bold')
      .text('DEPARTMENT OF HOME AFFAIRS', 50, 50);
-  doc.fontSize(10).font('Helvetica').fillColor('#333333')
-     .text('Republic of South Africa', 50, 75);
-  doc.rect(50, 95, 495, 3).fill('#007a3d');
-  doc.rect(50, 98, 495, 2).fill('#FFD700');
+  doc.rect(50, 85, 495, 3).fill('#007a3d');
+  doc.rect(50, 88, 495, 2).fill('#FFD700');
   doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
-     .text(title, 50, 115, { align: 'center', width: 495 });
+     .text(title, 50, 105, { align: 'center', width: 495 });
 }
 
 /**
@@ -267,8 +257,7 @@ async function generatePermanentResidencePDF(doc, permit) {
      .text('home affairs', 140, 45);
   doc.fontSize(9).font('Helvetica').fillColor('#333333')
      .text('Department', 140, 68)
-     .text('Home Affairs', 140, 80)
-     .text('REPUBLIC OF SOUTH AFRICA', 140, 92);
+     .text('Home Affairs', 140, 80);
 
   doc.fontSize(11).font('Helvetica-Bold').fillColor('#000000')
      .text('DHA-802', 500, 45);
@@ -328,7 +317,7 @@ async function generatePermanentResidencePDF(doc, permit) {
 
   y += 45;
   doc.fontSize(8).font('Helvetica').fillColor('#000000')
-     .text('has been authorised to enter the Republic of South Africa for the purpose of taking up permanent residence.', 50, y, { width: 495 });
+     .text('has been authorised to enter for the purpose of taking up permanent residence.', 50, y, { width: 495 });
 
   y += 40;
   doc.fontSize(9).font('Helvetica-Bold').text('Date of issue', leftCol, y);
@@ -363,13 +352,7 @@ async function generatePermanentResidencePDF(doc, permit) {
   doc.fontSize(8).font('Helvetica-Bold')
      .text('DIRECTOR-GENERAL', leftCol, sigY + 8);
 
-  // QR Code
-  const qrCode = await QRCode.toDataURL(
-    `https://www.dha.gov.za/verify?ref=${permit.permitNumber}`,
-    { width: 100, errorCorrectionLevel: 'H' }
-  );
-  const qrBuffer = Buffer.from(qrCode.split(',')[1], 'base64');
-  doc.image(qrBuffer, 450, 650, { width: 80, height: 80 });
+  doc.end();
 }
 
 /**
@@ -395,12 +378,7 @@ async function generateWorkPermitPDF(doc, permit) {
   doc.font('Helvetica-Bold').text('VISA Expiry Date:', 50, y);
   doc.font('Helvetica').text(permit.expiryDate || '', 200, y);
 
-  const qrCode = await QRCode.toDataURL(
-    `https://www.dha.gov.za/verify?ref=${permit.permitNumber}`,
-    { width: 100, errorCorrectionLevel: 'H' }
-  );
-  const qrBuffer = Buffer.from(qrCode.split(',')[1], 'base64');
-  doc.image(qrBuffer, 450, y + 20, { width: 80 });
+  doc.end();
 }
 
 /**
